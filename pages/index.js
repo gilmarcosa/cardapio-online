@@ -1,5 +1,7 @@
 import { useState } from "react";
-import Menu from "../components/menu";
+import Menu from "../components/Menu";
+import SummaryModal from "../components/SummaryModal";
+import { useMemo } from "react"; // Remova essa linha se você não estiver usando, pois estava no código anterior.
 
 export default function Home() {
   const [cart, setCart] = useState([]);
@@ -21,6 +23,8 @@ export default function Home() {
     setCart((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // Aqui você pode usar useMemo, como sugerido antes, para otimizar o cálculo do total
+  // const total = useMemo(() => cart.reduce((acc, item) => acc + item.price, 0), [cart]);
   const total = cart.reduce((acc, item) => acc + item.price, 0);
 
   const buscarEndereco = async () => {
@@ -39,6 +43,7 @@ export default function Home() {
     }
   };
 
+  // DECLARAÇÃO DA FUNÇÃO MOVIDA PARA AQUI, ANTES DE SER USADA
   const sendToWhatsApp = () => {
     const endereco = `${rua}, ${numero} - ${bairro}, ${cidade} - CEP: ${cep} ${
       complemento ? `(${complemento})` : ""
@@ -57,7 +62,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
-      {/* Hero */}
+      {/* ... todo o seu Hero e Cabeçalho ... */}
       <section className="relative w-full h-[30vh] md:h-[40vh]">
         <img
           src="/hero strog.png"
@@ -89,87 +94,26 @@ export default function Home() {
 
       {/* Modal resumo do pedido */}
       {showSummary && (
-        <div className="fixed inset-0 text-gray-600 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <h2 className="text-xl font-bold mb-4">Resumo do Pedido</h2>
-            <ul className="max-h-40 overflow-y-auto mb-4 text-gray-800">
-              {cart.map((item, index) => (
-                <li key={index} className="flex justify-between border-b py-2">
-                  <span>{item.name}</span>
-                  <span>R${item.price.toFixed(2)}</span>
-                </li>
-              ))}
-            </ul>
-
-            {/* Campos de endereço */}
-            <div className="space-y-2 mb-4">
-              <input
-                type="text"
-                placeholder="CEP"
-                value={cep}
-                onChange={(e) => setCep(e.target.value)}
-                onBlur={buscarEndereco}
-                className="w-full border px-3 py-2 rounded placeholder-gray-500"
-              />
-              <input
-                type="text"
-                placeholder="Rua"
-                value={rua}
-                onChange={(e) => setRua(e.target.value)}
-                className="w-full border px-3 py-2 rounded"
-              />
-              <input
-                type="text"
-                placeholder="Bairro"
-                value={bairro}
-                onChange={(e) => setBairro(e.target.value)}
-                className="w-full border px-3 py-2 rounded"
-              />
-              <input
-                type="text"
-                placeholder="Cidade"
-                value={cidade}
-                onChange={(e) => setCidade(e.target.value)}
-                className="w-full border px-3 py-2 rounded"
-              />
-              <input
-                type="text"
-                placeholder="Número"
-                value={numero}
-                onChange={(e) => setNumero(e.target.value)}
-                className="w-full border px-3 py-2 rounded"
-              />
-              <input
-                type="text"
-                placeholder="Complemento"
-                value={complemento}
-                onChange={(e) => setComplemento(e.target.value)}
-                className="w-full border px-3 py-2 rounded"
-              />
-            </div>
-
-            <p className="font-bold text-lg mb-6 text-gray-800">
-              Total: R${total.toFixed(2)}
-            </p>
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setShowSummary(false)}
-                className="px-4 py-2 rounded border border-gray-300 hover:bg-gray-100 transition"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={() => {
-                  sendToWhatsApp();
-                  setShowSummary(false);
-                }}
-                className="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-600 transition"
-              >
-                Confirmar e Enviar
-              </button>
-            </div>
-          </div>
-        </div>
+        <SummaryModal
+          cart={cart}
+          total={total}
+          removeFromCart={removeFromCart}
+          setShowSummary={setShowSummary}
+          cep={cep}
+          setCep={setCep}
+          rua={rua}
+          setRua={setRua}
+          bairro={bairro}
+          setBairro={setBairro}
+          cidade={cidade}
+          setCidade={setCidade}
+          numero={numero}
+          setNumero={setNumero}
+          complemento={complemento}
+          setComplemento={setComplemento}
+          buscarEndereco={buscarEndereco}
+          sendToWhatsApp={sendToWhatsApp}
+        />
       )}
     </div>
   );
